@@ -218,7 +218,7 @@ function App() {
             onClick={() => setIsSignInOpen(true)}
             type="button"
           >
-            Sign in
+            Demo sign in
           </button>
         )}
       </header>
@@ -369,8 +369,8 @@ function App() {
               <span className="logo-red">e</span>
             </div>
 
-            <h2 id="sign-in-title">Sign in</h2>
-            <p>Use your Google Account to continue to Moogle.</p>
+            <h2 id="sign-in-title">Demo sign in</h2>
+            <p>Preview a Google-style account flow without sending credentials.</p>
 
             <form className="modal-form" onSubmit={handleSignIn}>
               <label>
@@ -387,7 +387,8 @@ function App() {
               <a href="#forgot-email">Forgot email?</a>
 
               <p className="modal-note">
-                This demo signs you in locally. Real Google sign-in needs OAuth credentials.
+                Portfolio demo only. This stores the email locally in React state and does
+                not authenticate with Google.
               </p>
 
               <div className="modal-actions">

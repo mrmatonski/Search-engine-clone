@@ -1,70 +1,93 @@
-# Getting Started with Create React App
+# Moogle
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Moogle is a Google-inspired search UI built with React. It started as a familiar search-page clone, then grew into a portfolio piece with real web-search integration, an animated local weather drawer, a demo account modal, responsive styling, and focused tests.
 
-## Available Scripts
+## Portfolio Summary
 
-In the project directory, you can run:
+This project demonstrates:
 
-### `npm start`
+- React state management for search, modal, account, and weather UI
+- Real in-app web results through Google Programmable Search JSON API
+- Location-based weather through the Open-Meteo forecast API
+- A Google-style search experience with search shortcuts and external service links
+- Responsive layout polish for desktop and mobile
+- User-friendly fallback states when API credentials or location permission are missing
+- Regression tests for search, account modal, and weather behavior
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Screenshots
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Screenshots live in `docs/screenshots`.
 
-### `npm test`
+![Moogle home page](docs/screenshots/moogle-home.png)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+![Moogle demo sign-in modal](docs/screenshots/moogle-sign-in.png)
 
-### `npm run build`
+![Moogle weather drawer](docs/screenshots/moogle-weather.png)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Features
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- Google-inspired landing page with Moogle branding
+- Real Gmail, Images, About, Store, Advertising, Business, Privacy, and Terms links
+- In-app web result rendering when Google Programmable Search credentials are configured
+- Google fallback button when search credentials are not configured
+- "I'm Feeling Lucky" shortcut to Google
+- Demo-only sign-in modal that stores account state locally
+- Animated weather drawer using browser geolocation and Open-Meteo
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Tech Stack
 
-### `npm run eject`
+- React
+- Create React App
+- Google Programmable Search JSON API
+- Open-Meteo Forecast API
+- Vercel deployment config
+- Testing Library
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Environment Setup
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Copy `.env.example` to `.env.local` and add your Google Programmable Search credentials:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```bash
+REACT_APP_GOOGLE_SEARCH_API_KEY=your_api_key_here
+REACT_APP_GOOGLE_SEARCH_ENGINE_ID=your_search_engine_id_here
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Without these values, Moogle still runs and shows a setup state with a Google fallback search button.
 
-## Learn More
+## Local Development
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+npm install
+npm start
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+The app runs locally at `http://localhost:3000` unless that port is already occupied.
 
-### Code Splitting
+## Testing
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+```bash
+npm test -- --watchAll=false
+```
 
-### Analyzing the Bundle Size
+## Production Build
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+```bash
+npm run build
+```
 
-### Making a Progressive Web App
+## Deploy
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+This project includes `vercel.json` and deploy scripts:
 
-### Advanced Configuration
+```bash
+npm run deploy
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+In Vercel, add these environment variables for real in-app search:
 
-### Deployment
+- `REACT_APP_GOOGLE_SEARCH_API_KEY`
+- `REACT_APP_GOOGLE_SEARCH_ENGINE_ID`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## Notes
 
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+The sign-in modal is intentionally a demo flow. It does not authenticate with Google and does not send credentials anywhere. Real Google authentication would require OAuth client credentials and a proper auth flow.

@@ -1,0 +1,11 @@
+{
+  "buildCommand": "npm run build",
+  "framework": "create-react-app",
+  "outputDirectory": "build",
+  "rewrites": [
+    {
+      "destination": "/index.html",
+      "source": "/(.*)"
+    }
+  ]
+}

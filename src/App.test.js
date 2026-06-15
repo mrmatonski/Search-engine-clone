@@ -77,16 +77,16 @@ test('renders real web results from the search API', async () => {
   global.fetch = originalFetch;
 });
 
-test('opens the sign in modal', async () => {
+test('opens the demo sign in modal', async () => {
   render(<App />);
-  await userEvent.click(screen.getByRole('button', { name: /sign in/i }));
-  expect(screen.getByRole('dialog', { name: /sign in/i })).toBeInTheDocument();
+  await userEvent.click(screen.getByRole('button', { name: /demo sign in/i }));
+  expect(screen.getByRole('dialog', { name: /demo sign in/i })).toBeInTheDocument();
   expect(screen.getByPlaceholderText(/you@gmail.com/i)).toBeInTheDocument();
 });
 
 test('shows the signed in account after submitting the modal', async () => {
   render(<App />);
-  await userEvent.click(screen.getByRole('button', { name: /sign in/i }));
+  await userEvent.click(screen.getByRole('button', { name: /demo sign in/i }));
   await userEvent.type(screen.getByPlaceholderText(/you@gmail.com/i), 'michael@gmail.com');
   await userEvent.click(screen.getByRole('button', { name: /next/i }));
   expect(screen.getByRole('button', { name: /michael@gmail.com/i })).toBeInTheDocument();
