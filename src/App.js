@@ -185,8 +185,8 @@ function App() {
         <a href="#about">About</a>
         <a href="#store">Store</a>
         <span className="nav-spacer" />
-        <a href="#mail">Gmail</a>
-        <a href="#images">Images</a>
+        <a href="https://www.gmail.com">Gmail</a>
+        <a href="https://www.google.com/imghp">Images</a>
         <button className="apps-button" aria-label="Moogle apps" type="button">
           <span />
           <span />

@@ -9,6 +9,18 @@ test('renders the Moogle search page', () => {
   expect(screen.getByRole('button', { name: /moogle search/i })).toBeInTheDocument();
 });
 
+test('uses real destinations for Gmail and Images links', () => {
+  render(<App />);
+  expect(screen.getByRole('link', { name: /gmail/i })).toHaveAttribute(
+    'href',
+    'https://www.gmail.com',
+  );
+  expect(screen.getByRole('link', { name: /images/i })).toHaveAttribute(
+    'href',
+    'https://www.google.com/imghp',
+  );
+});
+
 test('opens the sign in modal', async () => {
   render(<App />);
   await userEvent.click(screen.getByRole('button', { name: /sign in/i }));
