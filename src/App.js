@@ -1,32 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import './App.css';
-
-const results = [
-  {
-    title: 'Moogle Search - Find What Matters',
-    url: 'https://www.moogle.example/search',
-    snippet:
-      'A friendly search experience for discovering pages, ideas, images, maps, and the occasional suspiciously useful answer.',
-  },
-  {
-    title: 'React Search Interface Patterns',
-    url: 'https://developer.example/react-search',
-    snippet:
-      'Build approachable search pages with controlled inputs, responsive layouts, and clear result summaries.',
-  },
-  {
-    title: 'How Search Engines Rank Pages',
-    url: 'https://learn.example/search-ranking',
-    snippet:
-      'An overview of keywords, freshness, links, structure, and relevance signals that help people find the right page.',
-  },
-  {
-    title: 'Images, News, Maps, Shopping - Moogle',
-    url: 'https://www.moogle.example/features',
-    snippet:
-      'Jump between different kinds of results with tabs inspired by familiar search tools and everyday browsing habits.',
-  },
-];
 
 const weatherCodes = {
   0: ['Crystal clear', '☀'],
@@ -59,7 +32,6 @@ const getWeatherMood = (code, isDay) => {
 
 function App() {
   const [query, setQuery] = useState('');
-  const [submittedQuery, setSubmittedQuery] = useState('');
   const [isSignInOpen, setIsSignInOpen] = useState(false);
   const [email, setEmail] = useState('');
   const [signedInEmail, setSignedInEmail] = useState('');
@@ -68,31 +40,12 @@ function App() {
   const [weatherError, setWeatherError] = useState('');
   const [weather, setWeather] = useState(null);
 
-  const hasSearched = submittedQuery.trim().length > 0;
   const isSignedIn = signedInEmail.length > 0;
 
-  const filteredResults = useMemo(() => {
-    if (!hasSearched) {
-      return results;
-    }
-
-    return results.map((result) => ({
-      ...result,
-      snippet: result.snippet.replace(
-        /search|pages|results/gi,
-        (match) => `${match}`,
-      ),
-    }));
-  }, [hasSearched]);
-
   const handleSubmit = (event) => {
-    event.preventDefault();
-    setSubmittedQuery(query.trim() || 'Moogle');
-  };
-
-  const handleLuckySearch = () => {
-    setQuery('Moogle magic');
-    setSubmittedQuery('Moogle magic');
+    if (!query.trim()) {
+      event.preventDefault();
+    }
   };
 
   const handleSignIn = (event) => {
@@ -180,10 +133,10 @@ function App() {
   }, [isSignInOpen]);
 
   return (
-    <main className={hasSearched ? 'app results-mode' : 'app'}>
+    <main className="app">
       <header className="top-nav" aria-label="Moogle navigation">
-        <a href="#about">About</a>
-        <a href="#store">Store</a>
+        <a href="https://about.google">About</a>
+        <a href="https://store.google.com">Store</a>
         <span className="nav-spacer" />
         <a href="https://www.gmail.com">Gmail</a>
         <a href="https://www.google.com/imghp">Images</a>
@@ -228,11 +181,17 @@ function App() {
           <span className="logo-red">e</span>
         </h1>
 
-        <form className="search-form" onSubmit={handleSubmit}>
+        <form
+          action="https://www.google.com/search"
+          className="search-form"
+          method="GET"
+          onSubmit={handleSubmit}
+        >
           <label className="search-box">
             <span className="search-icon" aria-hidden="true" />
             <input
               aria-label="Search"
+              name="q"
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Search Moogle or type a URL"
               type="search"
@@ -243,49 +202,19 @@ function App() {
 
           <div className="search-actions">
             <button type="submit">Moogle Search</button>
-            <button onClick={handleLuckySearch} type="button">
+            <button name="btnI" type="submit" value="1">
               I'm Feeling Lucky
             </button>
           </div>
         </form>
       </section>
 
-      {hasSearched && (
-        <section className="results-section" aria-label="Search results">
-          <div className="result-tabs" aria-label="Search filters">
-            <button className="active" type="button">All</button>
-            <button type="button">Images</button>
-            <button type="button">News</button>
-            <button type="button">Videos</button>
-            <button type="button">Maps</button>
-          </div>
-
-          <p className="result-count">
-            About 42,000,000 results for <strong>{submittedQuery}</strong>
-          </p>
-
-          <div className="results-list">
-            {filteredResults.map((result) => (
-              <article className="result-card" key={result.title}>
-                <cite>{result.url}</cite>
-                <h2>
-                  <a href={result.url}>{result.title}</a>
-                </h2>
-                <p>{result.snippet}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {!hasSearched && (
-        <footer className="footer">
-          <a href="#advertising">Advertising</a>
-          <a href="#business">Business</a>
-          <a href="#privacy">Privacy</a>
-          <a href="#terms">Terms</a>
-        </footer>
-      )}
+      <footer className="footer">
+        <a href="https://ads.google.com">Advertising</a>
+        <a href="https://www.google.com/services">Business</a>
+        <a href="https://policies.google.com/privacy">Privacy</a>
+        <a href="https://policies.google.com/terms">Terms</a>
+      </footer>
 
       <button className="weather-tab" onClick={openWeatherPanel} type="button">
         <span className="weather-tab-icon" aria-hidden="true">☁</span>

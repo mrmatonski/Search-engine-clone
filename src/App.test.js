@@ -21,6 +21,20 @@ test('uses real destinations for Gmail and Images links', () => {
   );
 });
 
+test('submits searches to Google like the real search page', () => {
+  render(<App />);
+  const searchInput = screen.getByLabelText(/search/i);
+  const searchForm = searchInput.closest('form');
+
+  expect(searchForm).toHaveAttribute('action', 'https://www.google.com/search');
+  expect(searchForm).toHaveAttribute('method', 'GET');
+  expect(searchInput).toHaveAttribute('name', 'q');
+  expect(screen.getByRole('button', { name: /i'm feeling lucky/i })).toHaveAttribute(
+    'name',
+    'btnI',
+  );
+});
+
 test('opens the sign in modal', async () => {
   render(<App />);
   await userEvent.click(screen.getByRole('button', { name: /sign in/i }));
