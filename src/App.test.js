@@ -21,18 +21,60 @@ test('uses real destinations for Gmail and Images links', () => {
   );
 });
 
-test('submits searches to Google like the real search page', () => {
+test('prompts for search credentials when in-app search is not configured', async () => {
   render(<App />);
   const searchInput = screen.getByLabelText(/search/i);
-  const searchForm = searchInput.closest('form');
+  await userEvent.type(searchInput, 'portfolio projects');
+  await userEvent.click(screen.getByRole('button', { name: /moogle search/i }));
+  expect(screen.getByText(/connect moogle to real web search/i)).toBeInTheDocument();
+  expect(screen.getByText(/react_app_google_search_api_key/i)).toBeInTheDocument();
+});
 
-  expect(searchForm).toHaveAttribute('action', 'https://www.google.com/search');
-  expect(searchForm).toHaveAttribute('method', 'GET');
-  expect(searchInput).toHaveAttribute('name', 'q');
-  expect(screen.getByRole('button', { name: /i'm feeling lucky/i })).toHaveAttribute(
-    'name',
-    'btnI',
+test('renders real web results from the search API', async () => {
+  const originalFetch = global.fetch;
+  const originalApiKey = process.env.REACT_APP_GOOGLE_SEARCH_API_KEY;
+  const originalEngineId = process.env.REACT_APP_GOOGLE_SEARCH_ENGINE_ID;
+
+  process.env.REACT_APP_GOOGLE_SEARCH_API_KEY = 'test-key';
+  process.env.REACT_APP_GOOGLE_SEARCH_ENGINE_ID = 'test-cx';
+  global.fetch = jest.fn(() =>
+    Promise.resolve({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          items: [
+            {
+              cacheId: 'one',
+              displayLink: 'example.com',
+              link: 'https://example.com/result',
+              snippet: 'A real result snippet from the web.',
+              title: 'Example Search Result',
+            },
+          ],
+        }),
+    }),
   );
+
+  render(<App />);
+  await userEvent.type(screen.getByLabelText(/search/i), 'example');
+  await userEvent.click(screen.getByRole('button', { name: /moogle search/i }));
+
+  expect(await screen.findByText(/example search result/i)).toBeInTheDocument();
+  expect(screen.getByText(/a real result snippet from the web/i)).toBeInTheDocument();
+
+  if (originalApiKey === undefined) {
+    delete process.env.REACT_APP_GOOGLE_SEARCH_API_KEY;
+  } else {
+    process.env.REACT_APP_GOOGLE_SEARCH_API_KEY = originalApiKey;
+  }
+
+  if (originalEngineId === undefined) {
+    delete process.env.REACT_APP_GOOGLE_SEARCH_ENGINE_ID;
+  } else {
+    process.env.REACT_APP_GOOGLE_SEARCH_ENGINE_ID = originalEngineId;
+  }
+
+  global.fetch = originalFetch;
 });
 
 test('opens the sign in modal', async () => {

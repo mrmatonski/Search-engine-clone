@@ -39,12 +39,64 @@ function App() {
   const [weatherStatus, setWeatherStatus] = useState('idle');
   const [weatherError, setWeatherError] = useState('');
   const [weather, setWeather] = useState(null);
+  const [searchStatus, setSearchStatus] = useState('idle');
+  const [searchError, setSearchError] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [activeQuery, setActiveQuery] = useState('');
 
   const isSignedIn = signedInEmail.length > 0;
+  const hasSearchResults = searchResults.length > 0 || searchStatus !== 'idle';
 
-  const handleSubmit = (event) => {
-    if (!query.trim()) {
-      event.preventDefault();
+  const searchOnGoogle = (term, lucky = false) => {
+    const params = new URLSearchParams({ q: term || 'Moogle' });
+
+    if (lucky) {
+      params.set('btnI', '1');
+    }
+
+    window.location.assign(`https://www.google.com/search?${params}`);
+  };
+
+  const runWebSearch = async (event) => {
+    event.preventDefault();
+    const searchTerm = query.trim();
+
+    if (!searchTerm) {
+      return;
+    }
+
+    setActiveQuery(searchTerm);
+    setSearchResults([]);
+    setSearchError('');
+
+    const googleSearchApiKey = process.env.REACT_APP_GOOGLE_SEARCH_API_KEY;
+    const googleSearchEngineId = process.env.REACT_APP_GOOGLE_SEARCH_ENGINE_ID;
+
+    if (!googleSearchApiKey || !googleSearchEngineId) {
+      setSearchStatus('missing-config');
+      return;
+    }
+
+    setSearchStatus('loading');
+
+    try {
+      const params = new URLSearchParams({
+        key: googleSearchApiKey,
+        cx: googleSearchEngineId,
+        q: searchTerm,
+      });
+      const response = await fetch(`https://www.googleapis.com/customsearch/v1?${params}`);
+
+      if (!response.ok) {
+        throw new Error('Search request failed.');
+      }
+
+      const data = await response.json();
+      setSearchResults(data.items || []);
+      setSearchStatus('success');
+    } catch {
+      setSearchStatus('error');
+      setSearchError('Moogle could not load web results. You can still search on Google.');
     }
   };
 
@@ -181,17 +233,11 @@ function App() {
           <span className="logo-red">e</span>
         </h1>
 
-        <form
-          action="https://www.google.com/search"
-          className="search-form"
-          method="GET"
-          onSubmit={handleSubmit}
-        >
+        <form className="search-form" onSubmit={runWebSearch}>
           <label className="search-box">
             <span className="search-icon" aria-hidden="true" />
             <input
               aria-label="Search"
-              name="q"
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Search Moogle or type a URL"
               type="search"
@@ -202,12 +248,87 @@ function App() {
 
           <div className="search-actions">
             <button type="submit">Moogle Search</button>
-            <button name="btnI" type="submit" value="1">
+            <button
+              onClick={() => searchOnGoogle(query.trim() || 'Moogle', true)}
+              type="button"
+            >
               I'm Feeling Lucky
             </button>
           </div>
         </form>
       </section>
+
+      {hasSearchResults && (
+        <section className="results-section" aria-label="Search results">
+          <div className="result-tabs" aria-label="Search filters">
+            <button className="active" type="button">All</button>
+            <a href={`https://www.google.com/search?tbm=isch&q=${encodeURIComponent(activeQuery)}`}>
+              Images
+            </a>
+            <a href={`https://news.google.com/search?q=${encodeURIComponent(activeQuery)}`}>
+              News
+            </a>
+            <a href={`https://www.google.com/search?tbm=vid&q=${encodeURIComponent(activeQuery)}`}>
+              Videos
+            </a>
+            <a href={`https://www.google.com/maps/search/${encodeURIComponent(activeQuery)}`}>
+              Maps
+            </a>
+          </div>
+
+          {searchStatus === 'loading' && (
+            <div className="search-state">
+              <span className="search-spinner" />
+              <p>Searching the web for <strong>{activeQuery}</strong>...</p>
+            </div>
+          )}
+
+          {searchStatus === 'missing-config' && (
+            <div className="search-state setup-state">
+              <h2>Connect Moogle to real web search</h2>
+              <p>
+                Add your Google Programmable Search credentials to use real in-app
+                results. Until then, Moogle can hand the query to Google.
+              </p>
+              <code>REACT_APP_GOOGLE_SEARCH_API_KEY</code>
+              <code>REACT_APP_GOOGLE_SEARCH_ENGINE_ID</code>
+              <button onClick={() => searchOnGoogle(activeQuery)} type="button">
+                Search on Google
+              </button>
+            </div>
+          )}
+
+          {searchStatus === 'error' && (
+            <div className="search-state setup-state">
+              <h2>Search hit turbulence</h2>
+              <p>{searchError}</p>
+              <button onClick={() => searchOnGoogle(activeQuery)} type="button">
+                Search on Google
+              </button>
+            </div>
+          )}
+
+          {searchStatus === 'success' && (
+            <>
+              <p className="result-count">
+                Showing real web results for <strong>{activeQuery}</strong>
+              </p>
+
+              <div className="results-list">
+                {searchResults.map((result) => (
+                  <article className="result-card" key={result.cacheId || result.link}>
+                    <cite>{result.displayLink || result.link}</cite>
+                    <h2>
+                      <a href={result.link}>{result.title}</a>
+                    </h2>
+                    <p>{result.snippet}</p>
+                  </article>
+                ))}
+              </div>
+            </>
+          )}
+        </section>
+      )}
 
       <footer className="footer">
         <a href="https://ads.google.com">Advertising</a>
